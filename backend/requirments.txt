@@ -1,4 +1,0 @@
-fastapi==0.124.2
-uvicorn==0.38.0
-pdfplumber==0.10.3
-python-dotenv==1.0.1
