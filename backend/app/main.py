@@ -1,11 +1,43 @@
 # this file is for the fastAPI entry point and not reserved for any logic
 
-from fastapi import FastAPI
+import io
+import pdfplumber
+from pdfminer.pdfparser import PDFSyntaxError
+from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.responses import JSONResponse
+from core.extract_text import extract_text_from_pdf
+import json
 
 #initialize the fastAPI as app
 app = FastAPI(title="DCC - Document Completeness Checker")
 
-# returns a simple message when reached out to
-@app.get("/")
+# returns a simple "statues ok" message when reached out to /health
+@app.get("/health")
 async def health_check():
     return {"status": "ok"}
+
+#able to upload pdf when reached out to /upload-pdf
+@app.post("/upload-pdf")
+async def upload_pdf(file: UploadFile = File(...)):
+    # str : perfect text
+    # 1 : the file type was improper (.pdf)
+    # 2 : no pages found
+    # 3 : syntax error
+    # x : other error
+
+    result = json.loads(extract_text_from_pdf(file).body.decode('utf-8'))
+
+    if "error" in result:
+        if result["error"] == 1:
+            raise HTTPException(status_code=400, detail="Invalid file type. Only PDF files are allowed.")
+        elif result["error"] == 2:
+            raise HTTPException(status_code=400, detail="No pages found in the PDF file.")
+        elif result["error"] == 3:
+            raise HTTPException(status_code=400, detail="Invalid file type. Only PDF files are allowed.")
+        else:
+            raise HTTPException(status_code=500, detail=result["error"])
+
+    else:
+        raise HTTPException(status_code=200, detail=result["text"])
+
+
