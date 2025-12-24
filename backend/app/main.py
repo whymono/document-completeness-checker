@@ -19,25 +19,31 @@ async def health_check():
 #able to upload pdf when reached out to /upload-pdf
 @app.post("/upload-pdf")
 async def upload_pdf(file: UploadFile = File(...)):
+    # the function outputs a either a str or an error code :-
     # str : perfect text
     # 1 : the file type was improper (.pdf)
     # 2 : no pages found
     # 3 : syntax error
     # x : other error
 
+    # use the extraxt text from pdf fuction from extract_text.py
     result = json.loads(extract_text_from_pdf(file).body.decode('utf-8'))
 
+    # see if the result is has an error
     if "error" in result:
         if result["error"] == 1:
             raise HTTPException(status_code=400, detail="Invalid file type. Only PDF files are allowed.")
         elif result["error"] == 2:
             raise HTTPException(status_code=400, detail="No pages found in the PDF file.")
         elif result["error"] == 3:
-            raise HTTPException(status_code=400, detail="Invalid file type. Only PDF files are allowed.")
+            raise HTTPException(status_code=400, detail="Syntax error in the PDF file.")
         else:
             raise HTTPException(status_code=500, detail=result["error"])
 
+    # if the result does not contain an error, push the result
     else:
-        raise HTTPException(status_code=200, detail=result["text"])
-
+        try:
+            raise HTTPException(status_code=200, detail=result["text"])
+        except:
+            raise HTTPException(status_code=500)
 
