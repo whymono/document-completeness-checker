@@ -42,8 +42,5 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     # if the result does not contain an error, push the result
     else:
-        try:
-            raise HTTPException(status_code=200, detail=result["text"])
-        except:
-            raise HTTPException(status_code=500)
+        raise HTTPException(status_code=200, detail=result["text"])
 

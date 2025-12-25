@@ -1,4 +1,4 @@
-import pdfminer
+from pdfminer.pdfparser import PDFSyntaxError
 import pdfplumber
 from fastapi import UploadFile
 from starlette.responses import JSONResponse
@@ -26,7 +26,7 @@ def extract_text_from_pdf(file: UploadFile) -> JSONResponse:
 
             return JSONResponse(status_code=200, content={"filename": file.filename, "text": str(extracted_text)})
 
-    except pdfminer.pdfparser.PDFSyntaxError:
+    except PDFSyntaxError:
         return JSONResponse(status_code=422, content={"error": 3})
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
