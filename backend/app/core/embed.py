@@ -21,3 +21,20 @@ def embed_text(text: list) -> list:
                 collections.append((i, j, score))
 
     return list(collections)
+
+def clean_embed(text):
+    coll = embed_text(text)
+    evecol = []
+
+    for i in range(len(coll)):
+        alr = set()
+
+        if coll[i][1] not in alr or coll[i][2] not in alr:
+            if coll[i][1] not in alr:
+                alr.add(coll[i][1])
+            if coll[i][2] not in alr:
+                alr.add(coll[i][2])
+
+        evecol.append(alr)
+
+    return evecol
