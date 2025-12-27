@@ -4,13 +4,13 @@ from fastapi import UploadFile
 from starlette.responses import JSONResponse
 
 
-# this extracts the text from the pdf file
-# in case of the provided file not being a .pdf it will return 1 (indicates failure: invalid file type).
+# this extracts the text from the PDF file
+# in case of the provided file not being a .pdf, it will return 1 (indicates failure: invalid file type).
 # in case of the provided file containing no pages, it will return 2 (indicates failure: no pages found).
-# in case of Syntax error it will return 3 (indicates failure: Syntax error)
-# in case of other issues it will return x (indicates failure: x)
+# in case of Syntax error, it will return 3 (indicates failure: Syntax error)
+# in case of other issues, it will return x (indicates failure: x)
 
-# in case of success it will return the extracted text (in the form of a string)
+# in case of success, it will return the extracted text (in the form of a string)
 def extract_text_from_pdf(file: UploadFile) -> JSONResponse:
     if not file.filename.endswith('.pdf'):
         return JSONResponse(status_code=400, content={"error": 1})
