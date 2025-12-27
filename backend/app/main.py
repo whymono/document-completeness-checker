@@ -3,7 +3,7 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from core.extract_text import extract_text_from_pdf
 from core.section import text_splitter
-from core.embed import clean_embed
+from core.embed import clean_embed, embed_text
 import json
 
 #initialize the fastAPI as app
@@ -26,7 +26,9 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     # use the extraxt text from PDF function from extract_text.py
     result = json.loads(extract_text_from_pdf(file).body.decode('utf-8'))
-    newresult = clean_embed(text_splitter(result["text"]))
+    seprated = text_splitter(result["text"])
+    embeded = embed_text(seprated)
+    cleaned = clean_embed(embeded)
 
     # see if the result has an error
     if "error" in result:
@@ -41,4 +43,7 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     # if the result does not contain an error, push the result
     else:
-        print(newresult)
+
+        for i in range(len(cleaned)):
+            for j in range(2):
+                print(seprated[cleaned[i][j]])

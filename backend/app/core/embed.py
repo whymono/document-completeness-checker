@@ -22,8 +22,7 @@ def embed_text(text: list) -> list:
 
     return list(collections)
 
-def clean_embed(text):
-    coll = embed_text(text)
+def clean_embed(coll):
     evecol = []
 
     for i in range(len(coll)):
@@ -35,6 +34,6 @@ def clean_embed(text):
             if coll[i][2] not in alr:
                 alr.add(coll[i][2])
 
-        evecol.append(alr)
+        evecol.append(list(alr))
 
     return evecol
