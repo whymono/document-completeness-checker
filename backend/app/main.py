@@ -1,11 +1,9 @@
 # this file is for the fastAPI entry point and not reserved for any logic
 
 import io
-import pdfplumber
-from pdfminer.pdfparser import PDFSyntaxError
 from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.responses import JSONResponse
 from core.extract_text import extract_text_from_pdf
+from core.section import text_splitter
 import json
 
 #initialize the fastAPI as app
@@ -28,6 +26,7 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     # use the extraxt text from pdf fuction from extract_text.py
     result = json.loads(extract_text_from_pdf(file).body.decode('utf-8'))
+    newresult = str(result["text"].replace("\\n", "\n")).replace("\\n", "\n")
 
     # see if the result is has an error
     if "error" in result:
@@ -42,5 +41,6 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     # if the result does not contain an error, push the result
     else:
-        raise HTTPException(status_code=200, detail=result["text"])
+        raise HTTPException(status_code=200, detail=text_splitter(newresult))
+
 

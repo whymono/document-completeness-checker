@@ -22,9 +22,9 @@ def extract_text_from_pdf(file: UploadFile) -> JSONResponse:
 
             extracted_text = ""
             for page in pdf.pages:
-                extracted_text += page.extract_text() + "\n"
+                extracted_text += page.extract_text()  + "\\n"
 
-            return JSONResponse(status_code=200, content={"filename": file.filename, "text": str(extracted_text)})
+            return JSONResponse(status_code=200, content={"filename": file.filename, "text": extracted_text})
 
     except PDFSyntaxError:
         return JSONResponse(status_code=422, content={"error": 3})
