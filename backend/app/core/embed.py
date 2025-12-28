@@ -6,10 +6,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 model = SentenceTransformer('all-MiniLM-L6-v2')
 THRESHOLD = 0.4
 
-
+# embedding the text and initialize the similarities matrix
 def embed_text(text: list) -> list:
 
-    # embedding the text and initialize the similarities matrix
     embeddings = model.encode(text)
     similarities_matrix = cosine_similarity(embeddings)
     collections = []
@@ -22,9 +21,12 @@ def embed_text(text: list) -> list:
 
     return list(collections)
 
-def clean_embed(coll):
+# clean the embed_text output and return only necessary metrix
+def clean_embed(coll: list) -> list:
+    # evecol is the list of lists that contain 2 indexes of the similar sections
     evecol = []
 
+    # this sorts the sections
     for i in range(len(coll)):
         alr = set()
 

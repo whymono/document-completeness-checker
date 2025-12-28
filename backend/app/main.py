@@ -29,6 +29,7 @@ async def upload_pdf(file: UploadFile = File(...)):
     separated = text_splitter(result["text"])
     embedded = embed_text(separated)
     cleaned = clean_embed(embedded)
+    similar = []
 
     # see if the result has an error
     if "error" in result:
@@ -47,5 +48,12 @@ async def upload_pdf(file: UploadFile = File(...)):
 
         for i in range(len(cleaned)):
             for j in range(2):
-                print(separated[cleaned[i][j]])
+                similar.append(str(separated[cleaned[i][j]]).replace("\n", " "))
+                print(str(separated[cleaned[i][j]]).replace("\n", " "))
+
+                print("......")
+
+            similar.append("//////////////")
             print("//////////////")
+
+        return HTTPException(status_code=400, detail= similar)
