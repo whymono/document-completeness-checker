@@ -26,9 +26,9 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     # use the extraxt text from PDF function from extract_text.py
     result = json.loads(extract_text_from_pdf(file).body.decode('utf-8'))
-    seprated = text_splitter(result["text"])
-    embeded = embed_text(seprated)
-    cleaned = clean_embed(embeded)
+    separated = text_splitter(result["text"])
+    embedded = embed_text(separated)
+    cleaned = clean_embed(embedded)
 
     # see if the result has an error
     if "error" in result:
@@ -47,4 +47,5 @@ async def upload_pdf(file: UploadFile = File(...)):
 
         for i in range(len(cleaned)):
             for j in range(2):
-                print(seprated[cleaned[i][j]])
+                print(separated[cleaned[i][j]])
+            print("//////////////")
