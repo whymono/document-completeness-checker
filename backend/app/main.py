@@ -43,6 +43,7 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     # if the result does not contain an error, push the result
     else:
+        print(cleaned)
 
         for i in range(len(cleaned)):
             for j in range(2):
