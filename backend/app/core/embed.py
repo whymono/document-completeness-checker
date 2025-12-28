@@ -34,6 +34,7 @@ def clean_embed(coll):
             if coll[i][2] not in alr:
                 alr.add(coll[i][2])
 
-        evecol.append(list(alr))
+        if list(alr) not in evecol:
+            evecol.append(list(alr))
 
     return evecol
