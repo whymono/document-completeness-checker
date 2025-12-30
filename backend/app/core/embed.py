@@ -1,5 +1,4 @@
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
+from sentence_transformers import SentenceTransformer, util
 
 # using the model 'all-MiniLM-L6-v2' for embedding
 # having the threshold as 0.4
@@ -9,18 +8,14 @@ THRESHOLD = 0.4
 # embedding the text and initialize the similarities matrix
 def embed_text(text: list) -> list:
 
-    embeddings = model.encode(text)
-    similarities_matrix = cosine_similarity(embeddings)
+    embeddings = model.encode(text, convert_to_tensor=True)
     collections = []
 
-    for i in range(len(text)):
-        for j in range(i + 1, len(text)):
-            score = round(float(similarities_matrix[i][j]))
-            if score > THRESHOLD:
-                collections.append((i, j, score))
+    clusters = util.community_detection(embeddings, min_community_size=2, threshold=THRESHOLD)
 
-    return list(collections)
+    return clusters
 
+"""
 # clean the embed_text output and return only necessary metrix
 def clean_embed(coll: list) -> list:
     # evecol is the list of lists that contain 2 indexes of the similar sections
@@ -40,3 +35,12 @@ def clean_embed(coll: list) -> list:
             evecol.append(list(alr))
 
     return evecol
+"""
+
+"""
+    for i in range(len(text)):
+        for j in range(i + 1, len(text)):
+            score = round(float(similarities_matrix[i][j]))
+            if score > THRESHOLD:
+                collections.append((i, j, score))
+"""
