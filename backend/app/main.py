@@ -4,6 +4,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from core.extract_text import extract_text_from_pdf
 from core.section import text_splitter
 from core.embed import embed_text
+from api.analyze import sort_document, analyze_document
 import json
 
 #initialize the fastAPI as app
@@ -28,7 +29,6 @@ async def upload_pdf(file: UploadFile = File(...)):
     result = json.loads(extract_text_from_pdf(file).body.decode('utf-8'))
     separated = text_splitter(result["text"])
     embedded = embed_text(separated)
-    similar = []
 
     # see if the result has an error
     if "error" in result:
@@ -44,8 +44,6 @@ async def upload_pdf(file: UploadFile = File(...)):
     # if the result does not contain an error, push the result
     else:
 
-        for i in embedded[1]:
-            print(str(separated[i]).replace("\n", ""))
-            print("////////////")
-
-        return HTTPException(status_code=400, detail= embedded)
+        print(analyze_document(embedded=embedded, text=separated))
+        print(enumerate(separated))
+        return HTTPException(status_code=200, detail= embedded)

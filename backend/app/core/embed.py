@@ -3,7 +3,7 @@ from sentence_transformers import SentenceTransformer, util
 # using the model 'all-MiniLM-L6-v2' for embedding
 # having the threshold as 0.4
 model = SentenceTransformer('all-MiniLM-L6-v2')
-THRESHOLD = 0.4
+THRESHOLD = 0.7
 
 # embedding the text and initialize the similarities matrix
 def embed_text(text: list) -> list:
