@@ -25,13 +25,18 @@ async def upload_pdf(file: UploadFile = File(...)):
     # 3: syntax error
     # x: other error
 
-    # use the extraxt text from PDF function from extract_text.py
     result = json.loads(extract_text_from_pdf(file).body.decode('utf-8'))
-    separated = text_splitter(result["text"])
-    embedded = embed_text(separated)
-
     # see if the result has an error
-    if "error" in result:
+    if not "error" in result:
+
+        separated = text_splitter(result["text"])
+        embedded = embed_text(separated)
+        #print(analyze_document(embedded=embedded, text=separated))
+        print(analyze_document(embedded=embedded, text=separated))
+        return analyze_document(embedded=embedded, text=separated)
+
+    # if the result does not contain an error, push the result
+    else:
         if result["error"] == 1:
             raise HTTPException(status_code=400, detail="Invalid file type. Only PDF files are allowed.")
         elif result["error"] == 2:
@@ -41,9 +46,3 @@ async def upload_pdf(file: UploadFile = File(...)):
         else:
             raise HTTPException(status_code=500, detail= result["error"])
 
-    # if the result does not contain an error, push the result
-    else:
-
-        print(analyze_document(embedded=embedded, text=separated))
-        print(enumerate(separated))
-        return HTTPException(status_code=200, detail= embedded)
