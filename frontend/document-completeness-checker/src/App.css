@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400&display=swap');
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 10px;
+    padding-left: 20px;
+}
+
+.navbar-brand h1 {
+    margin: 0;
+    padding: 0;
+}
+
+.hero-container {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.hero-container h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    color: #1a1a1a;
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.hero-container h2 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 400; /* Normal weight, not bold */
+    color: #666;
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+
+.upload-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #F5F5FA;
+
+    width: 90%;
+    height: 100%;
+    max-height: 800px;
+    max-width: 1200px;
+    margin: 50px auto;
+
+    padding-top: 100px;
+    padding-bottom: 100px;
+
+    border-radius: 20px;
+}
+
+.upload-card::before {
+    content: "";
+    position: absolute;
+    inset: 24px; /* distance from card edge */
+    border-radius: 16px;
+
+    border: 3px dashed #CFCFE6;
+
+    pointer-events: none;
+}
+
