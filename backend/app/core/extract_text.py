@@ -30,38 +30,3 @@ def extract_text_from_pdf(file: UploadFile) -> JSONResponse:
         return JSONResponse(status_code=422, content={"error": 3})
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
-
-
-
-
-    """
-    #check if the uploaded file is the correct format(.pdf) other wise raise an error (status code: 400)
-    if not file.filename.endswith('.pdf'):
-        raise HTTPException(status_code=400, detail="Invalid file type. Only PDF files are allowed.")
-
-    try:
-
-        file_content = await file.read()
-        with pdfplumber.open(io.BytesIO(file_content)) as pdf:
-            if not pdf.pages:
-                return JSONResponse(content={"filename": file.filename, "extracted_text": "no pages found in the pdf"}, status_code=200)
-
-            extracted_text = ""
-            for i in range(len(pdf.pages)):
-                page = pdf.pages[i]
-                extracted_text += page.extract_text() + "\n"
-
-            return JSONResponse(content={"filename" : file.filename, "extracted_text": extracted_text}, status_code=200)
-
-    except PDFSyntaxError:
-        raise HTTPException(status_code=422, detail="unable to read pdf file. the pdf might be corrupted")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-"""
-
-
-
-
-
-
-
