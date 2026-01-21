@@ -8,11 +8,12 @@ import axios from "axios";
 function LandingPage() {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isBackendReachable, setIsBackendReachable] = useState(false);
+  const apiurl = import.meta.env.VITE_API_URL || "http://localhost:8000"
 
   useEffect(() => {
     const checkBackendHealth = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/health");
+        const response = await axios.get(`${apiurl}/health`);
             setIsBackendReachable(true);
       } catch (error) {
           setIsBackendReachable(false)
