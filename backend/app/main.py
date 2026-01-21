@@ -1,5 +1,4 @@
 # this file is for the fastAPI entry point and not reserved for any logic
-
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from core.extract_text import extract_text_from_pdf
@@ -13,7 +12,7 @@ app = FastAPI(title="DCC - Document Completeness Checker")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
