@@ -41,9 +41,16 @@ async def upload_pdf(file: UploadFile = File(...)):
 
         separated = text_splitter(result["text"])
         embedded = embed_text(separated)
-        #print(analyze_document(embedded=embedded, text=separated))
-        print(analyze_document(embedded=embedded, text=separated))
-        return analyze_document(embedded=embedded, text=str(separated).replace("\n", ""))
+        
+        analysis = analyze_document(embedded=embedded, text=separated)
+        print(analysis)
+        
+        try:
+            # Parse the JSON string to a Python dict
+            analysis_json = json.loads(analysis)
+            return analysis_json
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=500, detail="Failed to decode analysis JSON from the model.")
 
     # if the result does contain an error
     else:
@@ -55,4 +62,3 @@ async def upload_pdf(file: UploadFile = File(...)):
             raise HTTPException(status_code=400, detail="Syntax error in the PDF file.")
         else:
             raise HTTPException(status_code=500, detail= result["error"])
-
