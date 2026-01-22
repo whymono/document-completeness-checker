@@ -7,6 +7,7 @@ const UploadCard = ({ setAnalysisResult, isBackendReachable }) => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
+  const apiurl = import.meta.env.VITE_API_URL
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 0) {
@@ -35,7 +36,7 @@ const UploadCard = ({ setAnalysisResult, isBackendReachable }) => {
     formData.append("file", fileToUpload);
 
     try {
-      const response = await axios.post("http://localhost:8000/upload-pdf", formData, {
+      const response = await axios.post(`${apiurl}/upload-pdf`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
