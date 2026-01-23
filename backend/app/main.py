@@ -25,7 +25,7 @@ app.add_middleware(
 async def health_check():
     return {"status": "ok"}
 
-#able to upload PDF when reached out to /upload-pdf
+#able to upload  PDF when reached out to /upload-pdf
 @app.post("/upload-pdf")
 async def upload_pdf(file: UploadFile = File(...)):
     # the function outputs either a str or an error code:-
