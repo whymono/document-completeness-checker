@@ -6,13 +6,13 @@ from core.section import text_splitter
 from core.embed import embed_text
 from api.analyze import analyze_document
 import json
+import os
 
 #initialize the fastAPI as app
 app = FastAPI(title="DCC - Document Completeness Checker")
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://document-completeness-checker.vercel.app",
+    allow_origins=[os.getenv("FRONTEND_URL"),
                    "http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
