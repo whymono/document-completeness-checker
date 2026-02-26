@@ -1,10 +1,10 @@
 # this file is for the fastAPI entry point and not reserved for any logic
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from core.extract_text import extract_text_from_pdf
-from core.section import text_splitter
-from core.embed import embed_text
-from api.analyze import analyze_document
+from app.core.extract_text import extract_text_from_pdf
+from app.core.section import text_splitter
+from app.core.embed import embed_text
+from app.api.analyze import analyze_document
 import json
 import os
 
