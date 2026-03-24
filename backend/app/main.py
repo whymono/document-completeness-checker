@@ -8,6 +8,8 @@ from app.core.section import text_splitter
 from app.core.embed import embed_text
 from app.api.analyze import analyze_document
 from app.core.config import settings
+from app.core.logger import logger
+from fastapi.responses import JSONResponse
 import json
 
 #initialize the fastAPI as app
@@ -20,6 +22,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc: Exception):
+    logger.error(f"Unhandled server error: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An unexpected error occurred on the server.", "error": str(exc)}
+    )
 
 # returns a simple "statues ok" message when reached out to /health
 @app.get("/health")
@@ -29,18 +38,25 @@ async def health_check():
 jobs = {}
 
 def process_document(job_id: str, text: str):
+    logger.info(f"Starting background job: {job_id}")
     try:
+        logger.info(f"Job {job_id} - Splitting text")
         separated = text_splitter(text)
+        
+        logger.info(f"Job {job_id} - Embedding text")
         embedded = embed_text(separated)
         
+        logger.info(f"Job {job_id} - Analyzing document")
         analysis = analyze_document(embedded=embedded, text=separated)
-        print(analysis)
         
         analysis_json = json.loads(analysis)
         jobs[job_id] = {"status": "completed", "result": analysis_json}
-    except json.JSONDecodeError:
+        logger.info(f"Job {job_id} - Successfully completed")
+    except json.JSONDecodeError as e:
+        logger.error(f"Job {job_id} - Failed to decode JSON from LLM: {e}")
         jobs[job_id] = {"status": "failed", "error": "Failed to decode analysis JSON from the model."}
     except Exception as e:
+        logger.error(f"Job {job_id} - Exception occurred: {e}", exc_info=True)
         jobs[job_id] = {"status": "failed", "error": str(e)}
 
 @app.get("/job/{job_id}")
@@ -68,6 +84,7 @@ def upload_pdf(file: UploadFile = File(...), background_tasks: BackgroundTasks =
 
     # if the result does contain an error
     else:
+        logger.warning(f"File upload error: code {result['error']}")
         if result["error"] == 1:
             raise HTTPException(status_code=400, detail="Invalid file type. Only PDF files are allowed.")
         elif result["error"] == 2:
@@ -75,4 +92,4 @@ def upload_pdf(file: UploadFile = File(...), background_tasks: BackgroundTasks =
         elif result["error"] == 3:
             raise HTTPException(status_code=400, detail="Syntax error in the PDF file.")
         else:
-            raise HTTPException(status_code=500, detail= result["error"])
+            raise HTTPException(status_code=500, detail=result["error"])
