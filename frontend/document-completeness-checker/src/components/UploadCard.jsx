@@ -1,28 +1,14 @@
 import React, { useState, useCallback } from "react";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
-import { motion } from "framer-motion";
 
-const UploadCard = ({ setAnalysisResult, isBackendReachable }) => {
+const UploadCard = ({ setAnalysisResult }) => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
   const apiurl = import.meta.env.VITE_API_URL
 
-  const onDrop = useCallback((acceptedFiles) => {
-    if (acceptedFiles.length > 0) {
-      setFile(acceptedFiles[0]);
-      handleUpload(acceptedFiles[0]);
-    }
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: "application/pdf",
-    multiple: false,
-  });
-
-  const handleUpload = async (fileToUpload) => {
+  const handleUpload = useCallback(async (fileToUpload) => {
     if (!fileToUpload) {
       setError("Please select a file to upload.");
       return;
@@ -72,13 +58,25 @@ const UploadCard = ({ setAnalysisResult, isBackendReachable }) => {
       setError(errorDetail);
       setUploading(false);
     } 
-  };
+  }, [apiurl, setAnalysisResult]);
+
+  const onDrop = useCallback((acceptedFiles) => {
+    if (acceptedFiles.length > 0) {
+      setFile(acceptedFiles[0]);
+      handleUpload(acceptedFiles[0]);
+    }
+  }, [handleUpload]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: "application/pdf",
+    multiple: false,
+  });
 
   return (
-    <motion.div
+    <div
       {...getRootProps()}
       className={`upload-card ${isDragActive ? "drag-active" : ""}`}
-      whileHover={{ scale: 1.02 }}
     >
       <input {...getInputProps()} />
       {uploading ? (
@@ -95,7 +93,7 @@ const UploadCard = ({ setAnalysisResult, isBackendReachable }) => {
         </>
       )}
       {error && <p className="error">{error}</p>}
-    </motion.div>
+    </div>
   );
 };
 

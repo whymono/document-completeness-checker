@@ -1,7 +1,6 @@
-import os
 import json
 from google import genai
-from dotenv import load_dotenv
+from app.core.config import settings
 
 
 OUTPUT_SCHEME = """
@@ -24,8 +23,6 @@ Rules:
 - No extra keys
 """
 
-load_dotenv()
-
 def sort_document(embedded: list, text: list) -> dict:
     output = {}
     section = []
@@ -39,12 +36,7 @@ def sort_document(embedded: list, text: list) -> dict:
     return output
 
 def analyze_document(embedded: list, text: list) -> dict:
-
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        raise RuntimeError("Could not find API key")
-
-    client = genai.Client(api_key=api_key)
+    client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
     prompt = f"""
 you are evaluating these document sections independently. return every result with the index of the section. the title is what the sections are about.

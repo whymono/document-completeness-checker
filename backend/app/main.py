@@ -1,4 +1,5 @@
 # this file is for the fastAPI entry point and not reserved for any logic
+# trigger reload
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
 import uuid
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,15 +7,14 @@ from app.core.extract_text import extract_text_from_pdf
 from app.core.section import text_splitter
 from app.core.embed import embed_text
 from app.api.analyze import analyze_document
+from app.core.config import settings
 import json
-import os
 
 #initialize the fastAPI as app
 app = FastAPI(title="DCC - Document Completeness Checker")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv("FRONTEND_URL"),
-                   "http://localhost:5173"],
+    allow_origins=[settings.FRONTEND_URL],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

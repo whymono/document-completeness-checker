@@ -1,6 +1,6 @@
-import os
 import math
 from google import genai
+from app.core.config import settings
 
 THRESHOLD = 0.7
 
@@ -46,11 +46,7 @@ def _get_communities(embeddings: list, min_community_size: int = 2, threshold: f
 
 # embedding the text and initialize the similarities matrix
 def embed_text(text: list) -> list:
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        raise RuntimeError("Could not find API key")
-
-    client = genai.Client(api_key=api_key)
+    client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
     response = client.models.embed_content(
         model="gemini-embedding-001",
