@@ -41,12 +41,37 @@ const UploadCard = ({ setAnalysisResult, isBackendReachable }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      setAnalysisResult(response.data);
+      
+      const jobId = response.data.job_id;
+      let isCompleted = false;
+      
+      while (!isCompleted) {
+        const statusResponse = await axios.get(`${apiurl}/job/${jobId}`);
+        const data = statusResponse.data;
+        
+        if (data.status === "completed") {
+          setAnalysisResult(data.result);
+          isCompleted = true;
+          setUploading(false);
+        } else if (data.status === "failed") {
+          setError(data.error || "Analysis failed.");
+          isCompleted = true;
+          setUploading(false);
+        } else {
+          // Wait for 2 seconds before polling again
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+        }
+      }
     } catch (error) {
-      setError(error.response ? error.response.data.detail : "An error occurred while uploading the file.");
-    } finally {
+      // Improved error parsing
+      const errorDetail = error.response?.data?.detail 
+        ? error.response.data.detail 
+        : typeof error.response?.data?.error === "string"
+        ? error.response.data.error
+        : "An error occurred while uploading the file.";
+      setError(errorDetail);
       setUploading(false);
-    }
+    } 
   };
 
   return (
