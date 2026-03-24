@@ -112,15 +112,25 @@ Tech Stack
 
 Backend: Python, FastAPI
 
-PDF Parsing: pdfplumber / pypdf
+PDF Parsing: pdfplumber
 
-Embeddings: Local models via Ollama
+Embeddings: Google Gemini Embeddings API
 
-Vector Search: FAISS (local)
+Vector Search: Custom mathematical dot-product similarity matrix
 
-LLM: ChatGPT API (used only for constrained inference)
+LLM: Google Gemini 2.5 Flash API (used only for constrained inference)
 
-Frontend: React 19 (minimal UI)
+Frontend: React 19 + Vite (with Framer Motion for UI, Axios for API calls)
+
+Production Readiness Features
+
+We have implemented several professional-grade backend features to handle large files and maintain high availability:
+- **Asynchronous Background Tasks**: PDFs are processed in the background, allowing the frontend to poll for job completion without timing out the browser or blocking the FastAPI event loop.
+- **Pydantic Configuration**: `.env` configuration is strictly typed and protected via `pydantic-settings`.
+- **Dynamic CORS**: Easily configurable multi-domain CORS policies.
+- **Memory-Safe File Uploads**: Enforces a strict 10MB chunked upload limit and deep-inspects magic numbers (`%PDF-`) to prevent RAM exhaustion and malware masquerading.
+- **IP Rate Limiting**: LLM endpoints are guarded via `slowapi` to prevent API token abuse.
+- **Centralized Structured Logging**: Standardized console logs map the status of internal tasks and tracebacks.
 
 Project Status
 
