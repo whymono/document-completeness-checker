@@ -65,8 +65,30 @@ def get_job_status(job_id: str):
         raise HTTPException(status_code=404, detail="Job not found")
     return jobs[job_id]
 
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+
 @app.post("/upload-pdf")
 def upload_pdf(file: UploadFile = File(...), background_tasks: BackgroundTasks = BackgroundTasks()):
+    # 1. Content Type Check
+    if file.content_type and file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="Invalid content type. Only application/pdf is allowed.")
+
+    # 2. Magic Number & Size Check
+    magic_number = file.file.read(5)
+    if magic_number != b"%PDF-":
+         raise HTTPException(status_code=400, detail="Invalid file format. Not a true PDF document.")
+    
+    file_size = len(magic_number)
+    chunk_size = 1024 * 1024
+    
+    while chunk := file.file.read(chunk_size):
+        file_size += len(chunk)
+        if file_size > MAX_FILE_SIZE:
+             raise HTTPException(status_code=413, detail=f"File too large. Maximum size is {MAX_FILE_SIZE // (1024*1024)}MB.")
+    
+    # 3. Reset the file pointer for processing
+    file.file.seek(0)
+
     # the function outputs either a str or an error code:-
     # str: perfect text
     # 1: the file type was improper (.pdf)
