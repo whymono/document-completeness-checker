@@ -1,7 +1,10 @@
 # this file is for the fastAPI entry point and not reserved for any logic
 # trigger reload
-from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
+from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks, Request
 import uuid
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.extract_text import extract_text_from_pdf
 from app.core.section import text_splitter
@@ -14,6 +17,10 @@ import json
 
 #initialize the fastAPI as app
 app = FastAPI(title="DCC - Document Completeness Checker")
+
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.FRONTEND_URL],
@@ -68,7 +75,8 @@ def get_job_status(job_id: str):
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
 @app.post("/upload-pdf")
-def upload_pdf(file: UploadFile = File(...), background_tasks: BackgroundTasks = BackgroundTasks()):
+@limiter.limit("5/minute")
+def upload_pdf(request: Request, file: UploadFile = File(...), background_tasks: BackgroundTasks = BackgroundTasks()):
     # 1. Content Type Check
     if file.content_type and file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Invalid content type. Only application/pdf is allowed.")
